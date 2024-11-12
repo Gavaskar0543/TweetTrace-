@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-# Authentication with OAuth 1.0a (User context)
+# Use OAuth1 (User-based Authentication)
 auth = tweepy.OAuth1UserHandler(
     consumer_key=API_KEY,
     consumer_secret=API_SECRET_KEY,
@@ -13,20 +13,25 @@ auth = tweepy.OAuth1UserHandler(
     access_token_secret=ACCESS_TOKEN_SECRET
 )
 
-# Creating the Tweepy API object
+# OAuth1 client for user-based requests
 api = tweepy.API(auth)
+
+# OAuth2 (Application-only Authentication) using Bearer Token
+client = tweepy.Client(bearer_token=BEARER_TOKEN)
 
 def fetch_followers(username):
     try:
-        # Get the user by username
+        # Fetch user data to get user ID
         user = api.get_user(screen_name=username)
-        
-        # Fetch the followers
-        followers = api.followers(user.id)
-        
+        user_id = user.id
+
+        # Fetch the followers of the user by their user ID
+        followers = api.followers(user_id=user_id)
+
         print(f"Followers of {username}:")
         for follower in followers:
             print(f"- {follower.screen_name}")
+
         return followers
 
     except tweepy.TweepyException as e:
